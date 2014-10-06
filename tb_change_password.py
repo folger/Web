@@ -12,7 +12,8 @@ def wait(wait_func):
     except TimeoutException:
         print('time out')
 
-newpassword = 'Tiger1984'
+with open('newpassword.txt') as f:
+    newpassword = f.read().strip()
 
 with open('1.txt') as f:
     for i, line in enumerate(f):
