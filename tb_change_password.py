@@ -7,17 +7,16 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 
 
 class WrongPassword(Exception): pass
-class NotAlibaba(Exception): pass
 
 def wait(wait_func):
     try:
-        WebDriverWait(driver, 15).until(wait_func)
+        WebDriverWait(driver, int(timeout)).until(wait_func)
         return True
     except TimeoutException:
         return False
 
 with open('config.txt') as f:
-    source, newpassword = f.read().strip().split('\n')[:2]
+    source, newpassword, timeout = f.read().strip().split('\n')[:3]
 
 with open(source) as f:
     for i, line in enumerate(f):
@@ -37,7 +36,7 @@ with open(source) as f:
 
             try:
                 driver.find_element_by_id('J_SafeLoginCheck').click()
-                mSleep(1000)
+                sleep(0.5)
             except WebDriverException:
                 pass
 
@@ -51,40 +50,34 @@ with open(source) as f:
             driver.get('http://member.1688.com/member/account_security.htm')
 
             wait(lambda the_driver: the_driver.find_element_by_id('security_product'))
-            driver.find_element_by_id('security_product')\
-                .find_element_by_tag_name('table')\
-                .find_element_by_tag_name('tbody')\
-                .find_elements_by_tag_name('tr')[1]\
-                .find_elements_by_tag_name('td')[3]\
-                .find_element_by_tag_name('a').click()
+            driver.find_element_by_xpath('//*[@id="security_product"]/table/tbody/tr[2]/td[4]/a').click()
 
             if not wait(lambda the_driver: the_driver.find_element_by_id('oldPassword')):
-                raise NotAlibaba
+                driver.get('http://110.taobao.com/account/modify_pwd.htm')
+                wait(lambda the_driver: the_driver.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div/div/div[2]/a[1]'))
+                driver.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div/div/div[2]/a[1]').click()
+                wait(lambda the_driver: the_driver.find_element_by_id('J_old_password_input'))
+                driver.find_element_by_id('J_old_password_input').send_keys(password)
+                driver.find_element_by_id('J_password_input').send_keys(newpassword)
+                driver.find_element_by_id('J_repassword_input').send_keys(newpassword)
+                driver.find_element_by_xpath('//*[@id="J_modify_password_form"]/div[4]/button').click()
+            else:
+                driver.find_element_by_id('oldPassword').send_keys(password)
+                try:
+                    driver.find_element_by_id('newPassword').send_keys(newpassword)
+                except WebDriverException:
+                    driver.find_element_by_id('newPassword').send_keys(newpassword)
 
-            driver.find_element_by_id('oldPassword').send_keys(password)
-            try:
-                driver.find_element_by_id('newPassword').send_keys(newpassword)
-            except WebDriverException:
-                driver.find_element_by_id('newPassword').send_keys(newpassword)
-
-            driver.find_element_by_id('confirmPassword').send_keys(newpassword)
-            driver.find_element_by_id('modifyPassword')\
-                .find_element_by_tag_name('table')\
-                .find_element_by_tag_name('tbody')\
-                .find_elements_by_tag_name('tr')[3]\
-                .find_elements_by_tag_name('td')[1]\
-                .find_element_by_tag_name('input').click()
+                driver.find_element_by_id('confirmPassword').send_keys(newpassword)
+                driver.find_element_by_xpath('//*[@id="modifyPassword"]/table/tbody/tr[4]/td[2]/input').click()
         except WrongPassword:
             with open('WrongPassword.txt', 'a') as f:
-                print(line, file=f)
-        except NotAlibaba:
-            with open('NotAlibaba.txt', 'a') as f:
                 print(line, file=f)
         except WebDriverException:
             with open('OtherFail.txt', 'a') as f:
                 print(line, file=f)
         finally:
-            sleep(1)
+            sleep(2)
             driver.quit()
 
-print('All Done')
+print('{0} All Done {0}'.format('-' * 10))
