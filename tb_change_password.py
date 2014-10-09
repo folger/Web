@@ -35,6 +35,12 @@ with open(source) as f:
                 if wait(lambda the_driver: the_driver.find_element_by_id('TPL_username_1')):
                     break
 
+            try:
+                driver.find_element_by_id('J_SafeLoginCheck').click()
+                mSleep(1000)
+            except WebDriverException:
+                pass
+
             driver.find_element_by_id('TPL_username_1').send_keys(username)
             driver.find_element_by_id('TPL_password_1').send_keys(password)
             driver.find_element_by_id('J_SubmitStatic').click()
