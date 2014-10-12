@@ -1,6 +1,4 @@
 chromedriver*
 *.txt
 *.log
-*.exe
-*.dll
 *.png

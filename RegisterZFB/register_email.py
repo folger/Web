@@ -16,7 +16,7 @@ def generate_username_and_password():
     values = string.letters + string.digits
     for i in range(6):
         username += values[random.randint(0, len(values) - 1)]
-    return username, username * 2
+    return username, username[::-1] + username
 
 def captchar_code(png, codetype):
     dama_username = 'lunbest'
@@ -96,7 +96,7 @@ def main():
         if is_success():
             sleep(5)
             print(username)
-            with open('163.txt', 'a') as f:
+            with open('163', 'a') as f:
                 f.write('|'.join([username, password]) + '\n')
         else:
             print('Fail ...')
