@@ -35,8 +35,10 @@ with open(source) as f:
                     break
 
             try:
-                driver.find_element_by_id('J_SafeLoginCheck').click()
-                sleep(0.5)
+                safeLoginCheck = driver.find_element_by_id('J_SafeLoginCheck')
+                if safeLoginCheck.is_selected():
+                    safeLoginCheck.click()
+                    sleep(0.5)
             except WebDriverException:
                 pass
 
