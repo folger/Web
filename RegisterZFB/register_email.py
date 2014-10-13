@@ -74,11 +74,12 @@ def main():
         wait(waitNext, 10000)
 
         try:
+            confirm = driver.find_element_by_id('gvcodeIpt')
             sleep(2)
             im = ImageGrab.grab((400, 420, 683, 483))
             im.save(png, 'png')
             code = captchar_code(png, 73)
-            driver.find_element_by_id('gvcodeIpt').send_keys(code.decode('gbk'))
+            confirm.send_keys(code.decode('gbk'))
             sleep(1)
             driver.find_element_by_id('gsubmitA').click()
             wait(lambda the_driver: the_driver.find_element_by_id('_mail_tabitem_0_34text'), 10000)
