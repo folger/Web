@@ -1,6 +1,5 @@
 #! /usr/bin/python
 
-import os
 import string
 import random
 from time import sleep
@@ -10,6 +9,7 @@ from selenium.common.exceptions import TimeoutException, WebDriverException, Ele
 from subprocess import check_output, CalledProcessError
 from PIL import ImageGrab
 
+
 def generate_username_and_password():
     random.seed()
     username = string.letters[random.randint(0, len(string.letters)-1)]
@@ -17,6 +17,7 @@ def generate_username_and_password():
     for i in range(6):
         username += values[random.randint(0, len(values) - 1)]
     return username, username[::-1] + username
+
 
 def captchar_code(png, codetype):
     dama_username = 'lunbest'
@@ -26,6 +27,7 @@ def captchar_code(png, codetype):
     except CalledProcessError:
         return ''
 
+
 def main():
     def wait(wait_func, timeout=10):
         try:
@@ -33,7 +35,6 @@ def main():
             return True
         except TimeoutException:
             return False
-
 
     try:
         driver = webdriver.Chrome('./chromedriver')
@@ -49,7 +50,7 @@ def main():
                 driver.find_element_by_xpath('//*[@id="tabsUl"]/li[1]/a').click()
 
         png = 'q.png'
-        im = ImageGrab.grab((413, 583, 536, 633))
+        im = ImageGrab.grab((380, 550, 536, 633))
         im.save(png, 'png')
 
         code = captchar_code(png, 54)
@@ -73,12 +74,12 @@ def main():
         wait(waitNext, 10000)
 
         try:
-            confirm = driver.find_element_by_id('gvcodeIpt')
             sleep(2)
-            im = ImageGrab.grab((432, 455, 683, 483))
+            im = ImageGrab.grab((400, 420, 683, 483))
             im.save(png, 'png')
             code = captchar_code(png, 73)
             driver.find_element_by_id('gvcodeIpt').send_keys(code.decode('gbk'))
+            sleep(1)
             driver.find_element_by_id('gsubmitA').click()
             wait(lambda the_driver: the_driver.find_element_by_id('_mail_tabitem_0_34text'), 10000)
         except WebDriverException:
