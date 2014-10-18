@@ -2,3 +2,4 @@ chromedriver*
 *.txt
 *.log
 *.png
+*.pyc

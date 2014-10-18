@@ -1,46 +1,17 @@
 #! /usr/bin/python
 
-import string
-import random
 from time import sleep
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, WebDriverException, ElementNotVisibleException
-from subprocess import check_output, CalledProcessError
-from PIL import ImageGrab
-
-
-def generate_username_and_password():
-    random.seed()
-    username = string.letters[random.randint(0, len(string.letters)-1)]
-    values = string.letters + string.digits
-    for i in range(6):
-        username += values[random.randint(0, len(values) - 1)]
-    return username, username[::-1] + username
-
-
-def captchar_code(png, codetype):
-    dama_username = 'lunbest'
-    dama_password = '789837'
-    try:
-        return check_output(['DecodeCaptChar.exe', png, dama_username, dama_password, str(codetype)])
-    except CalledProcessError:
-        return ''
+from selenium.common.exceptions import WebDriverException, ElementNotVisibleException
+from utils import web_wait, grab_image, captchar_code, generate_username_and_password
 
 
 def main():
-    def wait(wait_func, timeout=10):
-        try:
-            WebDriverWait(driver, timeout).until(wait_func)
-            return True
-        except TimeoutException:
-            return False
-
     try:
         driver = webdriver.Chrome('./chromedriver')
         driver.get('http://reg.email.163.com/unireg/call.do?cmd=register.entrance')
 
-        wait(lambda the_driver: the_driver.find_element_by_xpath('//*[@id="tabsUl"]/li[1]/a'))
+        web_wait(driver, lambda the_driver: the_driver.find_element_by_xpath('//*[@id="tabsUl"]/li[1]/a'))
         while True:
             try:
                 driver.find_element_by_id('nameIpt').send_keys('')
@@ -49,11 +20,7 @@ def main():
                 sleep(1)
                 driver.find_element_by_xpath('//*[@id="tabsUl"]/li[1]/a').click()
 
-        png = 'q.png'
-        im = ImageGrab.grab((380, 550, 536, 633))
-        im.save(png, 'png')
-
-        code = captchar_code(png, 54)
+        code = captchar_code(grab_image(380, 550, 536, 633), 54)
         username, password = generate_username_and_password()
         driver.find_element_by_id('nameIpt').send_keys(username)
         sleep(1)
@@ -71,24 +38,22 @@ def main():
                 return the_driver.find_element_by_id('gvcodeIpt')
             except WebDriverException:
                 return the_driver.find_element_by_xpath('//*[@id="secondarySection"]/div/p[1]')
-        wait(waitNext, 10000)
+        web_wait(driver, waitNext, 10000)
 
         try:
             confirm = driver.find_element_by_id('gvcodeIpt')
             sleep(2)
-            im = ImageGrab.grab((400, 420, 683, 483))
-            im.save(png, 'png')
-            code = captchar_code(png, 73)
+            code = captchar_code(grab_image(400, 420, 683, 483), 73)
             confirm.send_keys(code.decode('gbk'))
             sleep(1)
             driver.find_element_by_id('gsubmitA').click()
-            wait(lambda the_driver: the_driver.find_element_by_id('_mail_tabitem_0_34text'), 10000)
+            web_wait(driver, lambda the_driver: the_driver.find_element_by_id('dvMultiTabWrapper'), 10000)
         except WebDriverException:
             pass
 
         def is_success():
             try:
-                return driver.find_element_by_id('_mail_tabitem_0_34text')
+                return driver.find_element_by_id('dvMultiTabWrapper')
             except WebDriverException:
                 try:
                     return driver.find_element_by_xpath('//*[@id="secondarySection"]/div/p[1]')
