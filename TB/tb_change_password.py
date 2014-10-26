@@ -7,7 +7,7 @@ from utily import web_wait, WrongPassword
 
 
 def main():
-    with open('../config.txt') as f:
+    with open('config.txt') as f:
         source, newpassword, timeout = f.read().strip().split('\n')[:3]
 
     try:
@@ -73,11 +73,11 @@ def main():
                     print("成功")
                 except WrongPassword:
                     print("密码不正确")
-                    with open('../WrongPassword.txt', 'a') as f:
+                    with open('WrongPassword.txt', 'a') as f:
                         f.write(line + '\n')
                 except WebDriverException:
                     print("其他错误")
-                    with open('../OtherFail.txt', 'a') as f:
+                    with open('OtherFail.txt', 'a') as f:
                         f.write(line + '\n')
                 except WebDriverException:
                         pass

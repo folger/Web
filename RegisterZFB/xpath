@@ -1,0 +1,7 @@
+//*[@id="J-input-user"]
+//*[@id="password_input"]
+//*[@id="J-input-checkcode"]
+//*[@id="J-login-btn"]
+//*[@id="globalContainer"]/div[2]/div/div[2]/ul/li[3]/a
+//*[@id="account-main"]/div[3]/ul/li[2]/div[3]/a[1]
+driver.page_source find 设置成功，请牢记新的支付密码
