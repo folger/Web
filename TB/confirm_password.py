@@ -6,6 +6,8 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from utily import web_wait, WrongPassword
 
+class CaptCode(Exception):
+    pass
 
 def main():
     with open('config.txt') as f:
@@ -46,6 +48,9 @@ def main():
                     driver.find_element_by_id('J_SubmitStatic').click()
 
                     if not my_web_wait(lambda the_driver: the_driver.find_element_by_id('J_MtMainNav')):
+                        lf = driver.find_element_by_id('l_f_code')
+                        if lf.get_attribute('class') == 'field field-checkcode ph-focus':
+                            raise CaptCode
                         raise WrongPassword
 
                 except WrongPassword:
@@ -63,6 +68,12 @@ def main():
         print("用户中止")
     else:
         print('{0} 所有已完成 {0}'.format('-' * 10))
+    finally:
+        if i > 0:
+            with open(source) as f:
+                lines = f.readlines()
+            with open(source, 'w') as f:
+                f.writelines(lines[i:])
 
 
 if __name__ == '__main__':
